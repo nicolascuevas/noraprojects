@@ -22,11 +22,11 @@
                     <a class="nav-link">Welcome : {{ request.user|capfirst }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    <a class="nav-link" href="{% url 'authApp:logout' %}">Logout</a>
                 </li>
             {% else %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    <a class="nav-link" href="{% url 'authApp:login' %}">Login</a>
                 </li>
             {% endif %}
         </ul>
