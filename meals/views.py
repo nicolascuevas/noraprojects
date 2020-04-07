@@ -52,7 +52,7 @@ class CreateMenu(CreateView):
     template_name = 'menu_add.html'
     model = Menu
     fields = ('title', 'send',)
-    success_url = reverse_lazy('list_menu')
+    success_url = reverse_lazy('meals:list_menu')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -64,7 +64,7 @@ class UpdateMenu(UpdateView):
     model = Menu
     fields = ('title', 'send',)
     template_name = 'menu_add.html'
-    success_url = reverse_lazy('list_menu')
+    success_url = reverse_lazy('meals:list_menu')
 
 
 @method_decorator(login_required, name='dispatch')
@@ -94,7 +94,7 @@ class CreateOption(CreateView):
         return super(CreateOption, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('list_option', kwargs={'pk': self.object.menu.pk})
+        return reverse_lazy('meals:list_option', kwargs={'pk': self.object.menu.pk})
 
 
 @method_decorator(login_required, name='dispatch')
@@ -104,7 +104,7 @@ class UpdateOption(UpdateView):
     template_name = 'menu_option_add.html'
 
     def get_success_url(self):
-        return reverse_lazy('list_option', kwargs={'pk': self.object.menu.pk})
+        return reverse_lazy('meals:list_option', kwargs={'pk': self.object.menu.pk})
 
 
 def today_menu(request, uuid):

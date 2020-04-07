@@ -17,7 +17,8 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 urlpatterns = [
-    url('^', include('authApp.urls', namespace='authApp')),
+    url(r'^', include('authApp.urls', namespace='authApp')),
+    url(r'^', include('employeeApp.urls', namespace='employeeApp')),
+    url(r'^meals/', include('meals.urls', namespace='meals')),
     url(r'^accounts/', include('django.contrib.auth.urls')),
-    url(r'^meals/', include('meals.urls')),
 ]

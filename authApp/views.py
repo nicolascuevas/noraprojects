@@ -16,7 +16,7 @@ class LoginTemplateView(auth_views.LoginView):
     def get_success_url(self):
         if self.request.user.groups.filter(name__iexact='admin').exists() \
                 or self.request.user.is_superuser:
-            return reverse_lazy('list_menu')
+            return reverse_lazy('meals:list_menu')
         elif self.request.user.groups.filter(name__iexact='employees').exists():
             return reverse_lazy('authApp:home')
 
