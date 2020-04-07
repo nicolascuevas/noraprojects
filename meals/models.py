@@ -16,17 +16,19 @@ from meals import helpers
 
 class Menu(models.Model):
     user = models.ForeignKey(User, null=True, blank=True)
-    send = models.BooleanField(default=False)
+    #send = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
     title = models.CharField(max_length=100, null=True, blank=True)
-    uuid = models.UUIDField(default=helpers.generate_uuid())
+    date = models.DateField(default=timezone.now, unique=True)
+    #uuid = models.UUIDField(default=helpers.generate_uuid())
 
     class Meta:
         verbose_name = 'Menu'
+        ordering = ['date']
 
     def __str__(self):
-        return self.send
+        return self.date
 
     def can_choose_menu(self):
         """
@@ -67,6 +69,6 @@ class Order(models.Model):
 
 @receiver(post_save, sender=Menu)
 def post_menu(instance, **kwargs):
-    if instance.send:
+    if False:
         options = Option.objects.filter(menu__id=instance.id)
         send_slack_notification(options, instance.uuid)

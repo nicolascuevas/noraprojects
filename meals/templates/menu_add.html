@@ -7,7 +7,7 @@
         <div>
         <form action="" method="post">{% csrf_token %}
             <label>Title: </label> {{ form.title }} <br>
-            <label>Send Notification: </label> {{ form.send }} <br>
+            <label>Date: </label> {{ form.date }} <br>
             <input type="submit" value="Save" />
             <a href="{% url 'meals:list_menu' %}" class="btn btn-default">Cancel</a>
         </form>
