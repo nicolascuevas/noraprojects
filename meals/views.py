@@ -12,7 +12,8 @@ from django.utils.decorators import method_decorator
 from django.views.generic import *
 
 from forms import OrderForm
-from models import Menu, Option, Order, Employee
+from meals.models import Menu, Option, Order
+from employeeApp.models import Employee
 
 
 @method_decorator(login_required, name='dispatch')
