@@ -12,7 +12,8 @@ from django.utils.decorators import method_decorator
 from django.views.generic import *
 
 from forms import OrderForm
-from models import Menu, Option, Order, Employee
+from meals.models import Menu, Option, Order
+from employeeApp.models import Employee
 
 
 @method_decorator(login_required, name='dispatch')
@@ -21,7 +22,7 @@ class ListOrder(ListView):
     context_object_name = "orders"
 
     def get_queryset(self):
-        menu_orders = Order.objects.filter(menu_id=self.kwargs['pk'])
+        menu_orders = Order.objects.filter(menu=self.kwargs['pk'])
         orders = []
         for order in menu_orders:
             option = Option.objects.filter(pk=order.option).first()
@@ -52,7 +53,7 @@ class CreateMenu(CreateView):
     template_name = 'menu_add.html'
     model = Menu
     fields = ('title', 'send',)
-    success_url = reverse_lazy('list_menu')
+    success_url = reverse_lazy('meals:list_menu')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -64,7 +65,7 @@ class UpdateMenu(UpdateView):
     model = Menu
     fields = ('title', 'send',)
     template_name = 'menu_add.html'
-    success_url = reverse_lazy('list_menu')
+    success_url = reverse_lazy('meals:list_menu')
 
 
 @method_decorator(login_required, name='dispatch')
@@ -94,7 +95,7 @@ class CreateOption(CreateView):
         return super(CreateOption, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('list_option', kwargs={'pk': self.object.menu.pk})
+        return reverse_lazy('meals:list_option', kwargs={'pk': self.object.menu.pk})
 
 
 @method_decorator(login_required, name='dispatch')
@@ -104,7 +105,7 @@ class UpdateOption(UpdateView):
     template_name = 'menu_option_add.html'
 
     def get_success_url(self):
-        return reverse_lazy('list_option', kwargs={'pk': self.object.menu.pk})
+        return reverse_lazy('meals:list_option', kwargs={'pk': self.object.menu.pk})
 
 
 def today_menu(request, uuid):
@@ -136,6 +137,6 @@ def map_form_to_order(form, menu):
     order_instance.employee_identifier = form.cleaned_data['employee_identifier']
     order_instance.option = int(form.cleaned_data['option'])
     order_instance.customization = form.cleaned_data['customization']
-    order_instance.menu_id = menu.id
+    order_instance.menu = menu.id
     return order_instance
 

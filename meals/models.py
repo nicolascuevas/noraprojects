@@ -4,28 +4,18 @@ from __future__ import unicode_literals
 # Create your models here.
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from datetime import datetime, time
 
-from myproj.task import send_slack_notification
+from noraprojects.task import send_slack_notification
 from meals import helpers
 
 
-class Employee(models.Model):
-    identifier = models.CharField(max_length=10, null=True, blank=True)
-    email = models.EmailField(max_length=70, null=True, blank=True)
-
-    class Meta:
-        verbose_name = 'Employee'
-
-    def __str__(self):
-        return self.email
-
-
 class Menu(models.Model):
-    user_id = models.ForeignKey(User, null=True, blank=True)
+    user = models.ForeignKey(User, null=True, blank=True)
     send = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
@@ -49,7 +39,7 @@ class Menu(models.Model):
 
 
 class Option(models.Model):
-    menu_id = models.ForeignKey(Menu, on_delete=models.CASCADE)
+    menu = models.ForeignKey(Menu, on_delete=models.CASCADE)
     description = models.CharField(max_length=370, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
@@ -64,7 +54,7 @@ class Option(models.Model):
 class Order(models.Model):
     employee_identifier = models.CharField(max_length=10, null=True, blank=True)
     option = models.IntegerField(default=0, null=True, blank=True)
-    menu_id = models.IntegerField(default=0, null=True, blank=True)
+    menu = models.IntegerField(default=0, null=True, blank=True)
     customization = models.CharField(max_length=170, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
