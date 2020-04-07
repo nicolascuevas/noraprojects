@@ -21,7 +21,7 @@ class ListOrder(ListView):
     context_object_name = "orders"
 
     def get_queryset(self):
-        menu_orders = Order.objects.filter(menu_id=self.kwargs['pk'])
+        menu_orders = Order.objects.filter(menu=self.kwargs['pk'])
         orders = []
         for order in menu_orders:
             option = Option.objects.filter(pk=order.option).first()
@@ -136,6 +136,6 @@ def map_form_to_order(form, menu):
     order_instance.employee_identifier = form.cleaned_data['employee_identifier']
     order_instance.option = int(form.cleaned_data['option'])
     order_instance.customization = form.cleaned_data['customization']
-    order_instance.menu_id = menu.id
+    order_instance.menu = menu.id
     return order_instance
 
