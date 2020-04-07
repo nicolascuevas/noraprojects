@@ -52,7 +52,7 @@ class ListMenu(ListView):
 class CreateMenu(CreateView):
     template_name = 'menu_add.html'
     model = Menu
-    fields = ('title', 'send',)
+    fields = ('title', 'date',)
     success_url = reverse_lazy('meals:list_menu')
 
     def form_valid(self, form):
@@ -63,7 +63,7 @@ class CreateMenu(CreateView):
 @method_decorator(login_required, name='dispatch')
 class UpdateMenu(UpdateView):
     model = Menu
-    fields = ('title', 'send',)
+    fields = ('title', 'date',)
     template_name = 'menu_add.html'
     success_url = reverse_lazy('meals:list_menu')
 
