@@ -1,0 +1,18 @@
+[
+{
+  "model": "meals.employee",
+  "pk": 1,
+  "fields": {
+    "identifier": "11111111-1",
+    "email": "juan.perez@cornershopapp.com"
+  }
+},
+{
+  "model": "meals.employee",
+  "pk": 2,
+  "fields": {
+    "identifier": "22222222-2",
+    "email": "jose.perez@cornershopapp.com"
+  }
+}
+]

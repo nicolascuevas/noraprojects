@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6">
+
+        <div>
+            <form action="" method="post">{% csrf_token %}
+               <label for="username">Username:</label> {{ form.username }} <br>
+               <label for="password">Password:</label> {{ form.password }}
+                <input type="submit" value="Entrar">
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

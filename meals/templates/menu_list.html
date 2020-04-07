@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-lg-6">
+        <h5><a href="{% url 'create_menu' %}" class="btn btn-primary">Create new menu</a></h5>
+        {% if menu %}
+        <div>
+            <table class="table table-striped table-sm">
+              <thead class="thead-inverse">
+                <tr>
+                    <th>Title</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for current_menu in menu %}
+                    <tr>
+                        <td>{{ current_menu.title }}</td>
+                        <td>{{ current_menu.created_at }}</td>
+                        <td>
+                            <a href="{% url 'update_menu' current_menu.pk %}" title="Edit"><i class="fa fa-pencil"></i></a>
+                            <a href="{% url 'list_option' current_menu.pk %}" title="Options"><i class="fa fa-eye"></i></a>
+                            <a href="{% url 'list_order' current_menu.pk %}" title="View Orders"><i class="fa fa-book"></i></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
