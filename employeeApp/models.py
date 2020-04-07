@@ -10,7 +10,7 @@ from django.dispatch import receiver
 from django.utils import timezone
 from datetime import datetime, time
 
-from myproj.task import send_slack_notification
+from noraprojects.task import send_slack_notification
 from meals import helpers
 
 # Create your models here.

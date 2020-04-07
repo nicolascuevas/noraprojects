@@ -1,6 +1,6 @@
 from settings import SLACK_CHANNEL, SLACK_TOKEN, SLACK_TEXT, MENU_URL
 from slackclient import SlackClient
-from myproj.celery_app import app
+from noraprojects.celery_app import app
 from celery import shared_task
 
 
