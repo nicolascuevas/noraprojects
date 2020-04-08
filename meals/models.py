@@ -10,6 +10,7 @@ from django.dispatch import receiver
 from django.utils import timezone
 from datetime import datetime, time
 from meals import helpers
+from employeeApp.models import Employee
 
 
 class Menu(models.Model):
@@ -52,17 +53,20 @@ class Option(models.Model):
 
 
 class Order(models.Model):
-    employee_identifier = models.CharField(max_length=10, null=True, blank=True)
-    option = models.IntegerField(default=0, null=True, blank=True)
-    menu = models.IntegerField(default=0, null=True, blank=True)
+    employee_identifier = models.ForeignKey(Employee, on_delete=models.DO_NOTHING)
+    option = models.ForeignKey(Option, on_delete=models.DO_NOTHING)
+    menu = models.ForeignKey(Menu, on_delete=models.DO_NOTHING)
     customization = models.CharField(max_length=170, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'Employee Order'
+        unique_together = ('menu', 'employee_identifier')
 
     def __str__(self):
         return self.employee_identifier
+        
+
 
 
 @receiver(post_save, sender=Menu)

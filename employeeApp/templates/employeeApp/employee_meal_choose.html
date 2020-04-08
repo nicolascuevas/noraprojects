@@ -1,0 +1,59 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>CornerShop</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+
+    <body>
+        <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+                    data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="#">Nora Menu</a>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+                <ul class="navbar-nav mr-auto mt-2 mt-md-0">
+
+                </ul>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    {% if method == "POST" %}
+                        <h1>{{ message }}</h1>
+                        <br><br>
+                        <a href="/menu/{{ employee }}"> Seleccionar nuevamente</a>
+                    {% else %}
+                        ¡Hola! {{ employee.name }} <br>
+                        Haz click para seleccionar tu almuerzo :)<br><br>
+                        <ul>
+                            <form id = "form-id" action="/menu/{{ employee }}" method="post">{% csrf_token %}
+                                <input type="hidden" value="{{ menu.id }}" name="menu_id">
+                                <input type="hidden" value="{{ employee }}" name="employee_id">
+                            {% for menu_option in options %}
+                            
+                                <input type="radio" selected="selected" id="option_id" name="option_id" value="{{ menu_option.id }}">
+                                <label for="option_id">{{ menu_option.description }}</label><br>                                
+                            
+                            {% endfor %}
+                            <label>¿Algo que cambiar? (ej: sin mayonesa)</label><br>
+                            <input class="form-control" type="text" name="customization">
+                            <a class="btn btn-success m-1" href="#" onclick="document.forms['form-id'].submit();" >  Seleccionar Almuerzo </a>
+                            </form>
+                            
+                        </ul>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

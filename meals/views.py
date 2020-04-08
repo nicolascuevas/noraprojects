@@ -19,6 +19,9 @@ from employeeApp.models import Employee
 
 from employeeApp.tasks import import_slack_users, reminder_slack_users
 
+import datetime
+import uuid
+
 
 class BuildTrigger(APIView):
   def post(self, request):
@@ -34,8 +37,9 @@ class ListOrder(ListView):
         menu_orders = Order.objects.filter(menu=self.kwargs['pk'])
         orders = []
         for order in menu_orders:
-            option = Option.objects.filter(pk=order.option).first()
-            employee = Employee.objects.filter(identifier=order.employee_identifier).first()
+            option = Option.objects.filter(pk=order.option.id).first()
+            user_uuid = uuid.UUID(order.employee_identifier).hex
+            employee = Employee.objects.filter(identifier=user_uuid).first()
             orders.append(
                 {
                     'order': order,
@@ -117,6 +121,41 @@ class UpdateOption(UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('meals:list_option', kwargs={'pk': self.object.menu.pk})
+
+
+
+class ChooseMenu(ListView):
+    template_name = "menu_show_today.html"
+    model = Option
+    context_object_name = 'option'
+
+    def get_queryset(self):
+        current_date = datetime.datetime.now()
+        year = current_date.strftime("%Y")
+        month = current_date.strftime("%m")
+        day = current_date.strftime("%d")
+        current_menu = Menu.objects.filter(date__year=year, date__month=month, date__day=day)
+        if len(current_menu) > 0:
+            return Option.objects.filter(menu__id=current_menu[0].id)
+        else:
+            last_menu = Menu.objects.all()
+            return Option.objects.filter(menu__id=last_menu[0].id)
+
+    def get_context_data(self, **kwargs):
+        current_date = datetime.datetime.now()
+        year = current_date.strftime("%Y")
+        month = current_date.strftime("%m")
+        day = current_date.strftime("%d")
+        current_menu = Menu.objects.filter(date__year=year, date__month=month, date__day=day)
+
+        ctx = super(ChooseMenu, self).get_context_data(**kwargs)
+        if len(current_menu) > 0:
+            ctx['menu'] = Menu.objects.get(id=current_menu.id)
+        else:
+            last_menu = Menu.objects.all()
+            ctx['menu'] = Menu.objects.get(id=last_menu[0].id)
+        return ctx
+
 
 
 def today_menu(request, uuid):
