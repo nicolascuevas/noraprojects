@@ -53,7 +53,8 @@ class Option(models.Model):
 
 
 class Order(models.Model):
-    employee_identifier = models.ForeignKey(Employee, on_delete=models.DO_NOTHING)
+    #employee_identifier = models.ForeignKey(Employee, on_delete=models.DO_NOTHING)
+    employee_identifier = models.UUIDField(null= False, editable=False)
     option = models.ForeignKey(Option, on_delete=models.DO_NOTHING)
     menu = models.ForeignKey(Menu, on_delete=models.DO_NOTHING)
     customization = models.CharField(max_length=170, null=True, blank=True)

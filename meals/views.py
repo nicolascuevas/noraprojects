@@ -37,9 +37,8 @@ class ListOrder(ListView):
         menu_orders = Order.objects.filter(menu=self.kwargs['pk'])
         orders = []
         for order in menu_orders:
-            option = Option.objects.filter(pk=order.option.id).first()
-            user_uuid = uuid.UUID(order.employee_identifier).hex
-            employee = Employee.objects.filter(identifier=user_uuid).first()
+            option = Option.objects.filter(id=order.option.id).first()
+            employee = Employee.objects.filter(identifier=order.employee_identifier).first()
             orders.append(
                 {
                     'order': order,
@@ -123,38 +122,6 @@ class UpdateOption(UpdateView):
         return reverse_lazy('meals:list_option', kwargs={'pk': self.object.menu.pk})
 
 
-
-class ChooseMenu(ListView):
-    template_name = "menu_show_today.html"
-    model = Option
-    context_object_name = 'option'
-
-    def get_queryset(self):
-        current_date = datetime.datetime.now()
-        year = current_date.strftime("%Y")
-        month = current_date.strftime("%m")
-        day = current_date.strftime("%d")
-        current_menu = Menu.objects.filter(date__year=year, date__month=month, date__day=day)
-        if len(current_menu) > 0:
-            return Option.objects.filter(menu__id=current_menu[0].id)
-        else:
-            last_menu = Menu.objects.all()
-            return Option.objects.filter(menu__id=last_menu[0].id)
-
-    def get_context_data(self, **kwargs):
-        current_date = datetime.datetime.now()
-        year = current_date.strftime("%Y")
-        month = current_date.strftime("%m")
-        day = current_date.strftime("%d")
-        current_menu = Menu.objects.filter(date__year=year, date__month=month, date__day=day)
-
-        ctx = super(ChooseMenu, self).get_context_data(**kwargs)
-        if len(current_menu) > 0:
-            ctx['menu'] = Menu.objects.get(id=current_menu.id)
-        else:
-            last_menu = Menu.objects.all()
-            ctx['menu'] = Menu.objects.get(id=last_menu[0].id)
-        return ctx
 
 
 

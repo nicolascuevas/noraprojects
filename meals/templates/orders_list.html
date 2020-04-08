@@ -10,7 +10,7 @@
               <thead class="thead-inverse">
                 <tr>
                     <th>Employee Identifier</th>
-                    <th>Email</th>
+                    <th>Slack</th>
                     <th>Option</th>
                     <th>Date</th>
                 </tr>
@@ -19,7 +19,7 @@
                 {% for entry in orders %}
                     <tr>
                         <td>{{ entry.order.employee_identifier }}</td>
-                        <td>{{ entry.employee.email }}</td>
+                        <td>{{ entry.employee.name }}</td>
                         <td>{{ entry.option.description }}</td>
                         <td>{{ entry.order.created_at }}</td>
                     </tr>
