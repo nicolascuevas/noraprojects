@@ -35,7 +35,7 @@ class Menu(models.Model):
         """
         today_date = datetime.now()
         today_time = time(today_date.hour, today_date.minute, today_date.second)
-        result = today_time.hour <= 10 and today_time.minute <= 60
+        result = today_time.hour <= 11 and today_time.minute <= 60
         return result
 
 

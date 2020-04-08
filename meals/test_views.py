@@ -13,35 +13,19 @@ class ViewsTest(TestCase):
     def setUpTestData(cls):
         cls.factory = RequestFactory()
         cls.user = User.objects.create(
-            id=1,
             username="testuser",
             email="testuser@testdomain.com",
             password="supersecret"
         )
         Menu.objects.create(
             id=1,
-            user_id=1,
+            user=cls.user,
+            date=datetime.now(),
             created_at=datetime.now(),
             updated_at=datetime.now(),
             title="Test Menu 1",
-            uuid=helpers.generate_uuid()
         )
-        Menu.objects.create(
-            id=2,
-            user_id=1,
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
-            title="Test Menu 2",
-            uuid=helpers.generate_uuid()
-        )
-        Menu.objects.create(
-            id=3,
-            user_id=1,
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
-            title="Test Menu 3",
-            uuid=helpers.generate_uuid()
-        )
+
 
     def test_home(self):
         request = self.factory.get("")
