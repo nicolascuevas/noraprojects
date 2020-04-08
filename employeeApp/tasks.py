@@ -58,19 +58,21 @@ def reminder_slack_users():
 
         for user in users:
             print (user)
-            send_slack_message.delay(user.identifier, menu_description)
+            send_slack_message.delay(user.identifier, user.slack_id, menu_description)
 
 
 @app.task
-def send_slack_message(identifier, menu_description):
+def send_slack_message(identifier, slack_id, menu_description):
     sc = SlackClient(SLACK_TOKEN)
     today_menu_url = MENU_URL.format(identifier)
     menu_text = SLACK_TEXT.format(menu_description, today_menu_url)
 
-    sc.api_call(
-        "chat.postMessage",
-        channel="UKUGXSH0V",
-        text=menu_text
-    )
+    #for develoerment porposes
+    if slack_id == 'UKUGXSH0V':
+        sc.api_call(
+            "chat.postMessage",
+            channel="UKUGXSH0V",
+            text=menu_text
+        )
 
 
