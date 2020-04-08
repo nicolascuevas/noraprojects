@@ -3,7 +3,8 @@ from noraprojects.settings import SLACK_CHANNEL, SLACK_TOKEN, SLACK_TEXT, MENU_U
 from slackclient import SlackClient
 from employeeApp.models import Employee
 from meals.models import Menu, Option
-
+from celery.decorators import periodic_task
+from datetime import timedelta
 from helpers import generate_uuid
 import datetime
 import json
@@ -13,6 +14,7 @@ import uuid
 @app.task
 def prueba_suma(x, y):
     return x + y
+
 
 
 @app.task
@@ -71,7 +73,7 @@ def send_slack_message(identifier, slack_id, menu_description):
     if slack_id == 'UKUGXSH0V':
         sc.api_call(
             "chat.postMessage",
-            channel="UKUGXSH0V",
+            channel=slack_id,
             text=menu_text
         )
 

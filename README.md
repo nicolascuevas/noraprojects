@@ -32,6 +32,10 @@
 - urllib3 v1.21.1
 - vine v1.1.4
 - websocket-client v0.44.0
+- coverage==3.6
+- djangorestframework v3.9.4
+- redisbeat v1.2.4
+
 
 ## <a name="Instructions"></a>Instructions
 
@@ -79,7 +83,7 @@ python manage.py migrate
 - Load initial "admin" user (Nora)
 
 ```bash
-python manage.py meals/data/users.json
+python manage.py loaddata meals/data/users.json
 ```
 
 - Open two more terminal tabs or terminal windows (the first one will be used to run the app, the second one to run redis and the third one to run Celery)
@@ -96,10 +100,13 @@ python manage.py runserver
 redis-server
 ```
 
-- Run Celery
+- Run Celery.
+This will allow to call async tasks and active the crons jobs to ejecute (import users, reminder for slack)
 
 ```bash
-celery worker -A test-proj.celery_app --loglevel=DEBUG
+> open terminal
+> source /venv/bin/activate
+> celery worker -A noraprojects.celery_app --loglevel=DEBUG -B
 ```
 
 ## Tests
@@ -113,14 +120,23 @@ coverage run manage.py test meals  -v 2 && coverage html && open htmlcov/index.h
 ## Credentials
 
 ### Slack Space
+steps to make slack working on the projects.
 
-- I'm assuming there's a channel where you, as an employee, can receive Nora's notifications so you will need to join the channel "almuerzos"
+create slack app with the following scopes:
 
-The notification is sent when you mark the checkbox "Send" when editing the menu itself (there must be some much better way for sure) and it says
-``https://nora.cornershop.io/menu/SOME_UUID``, in order to see that page you need to manually replace ``https://nora.cornershop.io`` with
-``http://localhost:8000``
+	- users:list:read
+	- chat:write:bot
 
-### Nora
+paste de Slack Bot Token in the folowind directory and paste on SLACK_TOKEN
+
+```bash
+ > noraprojects/noraprojects/settings.py
+ SLACK_TOKEN = 'xoxb-xxxxxxxxxxxxxx-xxxxxxxxxxxxxx-xxxxxxxxdxxxxxxxxxxxxxxx'
+```
+
+This will start a cron job which is going to import slack users every day and send s reminder for users every day at 7AM
+
+### Nora User
 
 - Username: nora
 - Password: cornershop
