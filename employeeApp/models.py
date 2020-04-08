@@ -10,7 +10,6 @@ from django.dispatch import receiver
 from django.utils import timezone
 from datetime import datetime, time
 
-from meals import helpers
 import uuid
 
 # Create your models here.
@@ -28,4 +27,6 @@ class Employee(models.Model):
     def __str__(self):
         return str(self.identifier)
 
-        
+    def __unicode__(self):
+        return str(self.identifier)
+

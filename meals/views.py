@@ -19,6 +19,9 @@ from employeeApp.models import Employee
 
 from employeeApp.tasks import import_slack_users, reminder_slack_users
 
+import datetime
+import uuid
+
 
 class BuildTrigger(APIView):
   def post(self, request):
@@ -34,7 +37,7 @@ class ListOrder(ListView):
         menu_orders = Order.objects.filter(menu=self.kwargs['pk'])
         orders = []
         for order in menu_orders:
-            option = Option.objects.filter(pk=order.option).first()
+            option = Option.objects.filter(id=order.option.id).first()
             employee = Employee.objects.filter(identifier=order.employee_identifier).first()
             orders.append(
                 {
@@ -117,6 +120,9 @@ class UpdateOption(UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('meals:list_option', kwargs={'pk': self.object.menu.pk})
+
+
+
 
 
 def today_menu(request, uuid):
