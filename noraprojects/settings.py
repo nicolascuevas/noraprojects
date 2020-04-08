@@ -121,7 +121,9 @@ STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-SLACK_TOKEN = 'xoxb-1016422057057-1016841094259-F890bHCYiXwQldBX0BmVT7gJ'  # Need to replace the slack token later
+CELERY_BROKER_URL = 'redis://localhost'
+
+SLACK_TOKEN = 'xoxb-512467688836-1051544230837-dOsZJ2mudYwgHLabrhw42C4B'  # Need to replace the slack token later
 SLACK_CHANNEL = '#almuerzos'
 SLACK_TEXT = "Hola! \nEl menu de hoy es : \n {} \n Pueden enviar su pedido aca: {} \nSaludos!"
 MENU_URL = "http://nora.cornershop.io/menu/{}"

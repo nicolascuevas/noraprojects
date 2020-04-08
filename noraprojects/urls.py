@@ -15,10 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from meals.views import BuildTrigger
 
 urlpatterns = [
     url(r'^', include('authApp.urls', namespace='authApp')),
     url(r'^', include('employeeApp.urls', namespace='employeeApp')),
     url(r'^meals/', include('meals.urls', namespace='meals')),
     url(r'^accounts/', include('django.contrib.auth.urls')),
+    url(r'^api/trigger_build/', BuildTrigger.as_view()),
 ]
