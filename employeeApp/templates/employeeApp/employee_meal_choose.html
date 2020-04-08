@@ -26,29 +26,33 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-6">
-                    {% if method == "POST" %}
-                        <h1>{{ message }}</h1>
-                        <br><br>
-                        <a href="/menu/{{ employee }}"> Seleccionar nuevamente</a>
+                    {% if menu.can_choose_menu == True %}
+                        {% if method == "POST" %}
+                            <h1>{{ message }}</h1>
+                            <br><br>
+                            <a href="/menu/{{ employee }}"> Seleccionar nuevamente</a>
+                        {% else %}
+                            ¡Hola! {{ employee.name }} <br>
+                            Haz click para seleccionar tu almuerzo :)<br><br>
+                            <ul>
+                                <form id = "form-id" action="/menu/{{ employee }}" method="post">{% csrf_token %}
+                                    <input type="hidden" value="{{ menu.id }}" name="menu_id">
+                                    <input type="hidden" value="{{ employee }}" name="employee_id">
+                                {% for menu_option in options %}
+                                
+                                    <input type="radio" selected="selected" id="option_id" name="option_id" value="{{ menu_option.id }}">
+                                    <label for="option_id">{{ menu_option.description }}</label><br>                                
+                                
+                                {% endfor %}
+                                <label>¿Algo que cambiar? (ej: sin mayonesa)</label><br>
+                                <input class="form-control" type="text" name="customization">
+                                <a class="btn btn-success m-1" href="#" onclick="document.forms['form-id'].submit();" >  Seleccionar Almuerzo </a>
+                                </form>
+                                
+                            </ul>
+                        {% endif %}
                     {% else %}
-                        ¡Hola! {{ employee.name }} <br>
-                        Haz click para seleccionar tu almuerzo :)<br><br>
-                        <ul>
-                            <form id = "form-id" action="/menu/{{ employee }}" method="post">{% csrf_token %}
-                                <input type="hidden" value="{{ menu.id }}" name="menu_id">
-                                <input type="hidden" value="{{ employee }}" name="employee_id">
-                            {% for menu_option in options %}
-                            
-                                <input type="radio" selected="selected" id="option_id" name="option_id" value="{{ menu_option.id }}">
-                                <label for="option_id">{{ menu_option.description }}</label><br>                                
-                            
-                            {% endfor %}
-                            <label>¿Algo que cambiar? (ej: sin mayonesa)</label><br>
-                            <input class="form-control" type="text" name="customization">
-                            <a class="btn btn-success m-1" href="#" onclick="document.forms['form-id'].submit();" >  Seleccionar Almuerzo </a>
-                            </form>
-                            
-                        </ul>
+                    Horario se seleccion ha terminado por hoy
                     {% endif %}
                     
                 </div>
