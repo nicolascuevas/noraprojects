@@ -10,11 +10,20 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import *
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from forms import OrderForm
 from meals.models import Menu, Option, Order
 from employeeApp.models import Employee
 
+from employeeApp.tasks import import_slack_users, reminder_slack_users
+
+
+class BuildTrigger(APIView):
+  def post(self, request):
+    build_something() # This would take 1 minute to finish
+    return Response(None, status=201)
 
 @method_decorator(login_required, name='dispatch')
 class ListOrder(ListView):
@@ -44,6 +53,8 @@ class ListMenu(ListView):
     context_object_name = 'menu'
 
     def get_queryset(self):
+        print import_slack_users.delay()
+        print reminder_slack_users.delay()
         if self.request.user.is_authenticated():
             return Menu.objects.filter(user=self.request.user)
 
