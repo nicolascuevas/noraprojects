@@ -1,4 +1,4 @@
-"""myproj URL Configuration
+"""noraprojects URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.11/topics/http/urls/
@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from meals.views import BuildTrigger
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^', include('employeeApp.urls', namespace='employeeApp')),
+    url(r'^', include('meals.urls', namespace='meals')),
     url(r'^accounts/', include('django.contrib.auth.urls')),
-    url(r'^', include('meals.urls')),
+    url(r'^api/trigger_build/', BuildTrigger.as_view()),
 ]

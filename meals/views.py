@@ -10,10 +10,23 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import *
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from forms import OrderForm
-from models import Menu, Option, Order, Employee
+from meals.models import Menu, Option, Order
+from employeeApp.models import Employee
 
+from employeeApp.tasks import import_slack_users, reminder_slack_users
+
+import datetime
+import uuid
+
+
+class BuildTrigger(APIView):
+  def post(self, request):
+    build_something() # This would take 1 minute to finish
+    return Response(None, status=201)
 
 @method_decorator(login_required, name='dispatch')
 class ListOrder(ListView):
@@ -21,10 +34,10 @@ class ListOrder(ListView):
     context_object_name = "orders"
 
     def get_queryset(self):
-        menu_orders = Order.objects.filter(menu_id=self.kwargs['pk'])
+        menu_orders = Order.objects.filter(menu=self.kwargs['pk'])
         orders = []
         for order in menu_orders:
-            option = Option.objects.filter(pk=order.option).first()
+            option = Option.objects.filter(id=order.option.id).first()
             employee = Employee.objects.filter(identifier=order.employee_identifier).first()
             orders.append(
                 {
@@ -43,6 +56,8 @@ class ListMenu(ListView):
     context_object_name = 'menu'
 
     def get_queryset(self):
+        print import_slack_users.delay()
+        print reminder_slack_users.delay()
         if self.request.user.is_authenticated():
             return Menu.objects.filter(user=self.request.user)
 
@@ -51,8 +66,8 @@ class ListMenu(ListView):
 class CreateMenu(CreateView):
     template_name = 'menu_add.html'
     model = Menu
-    fields = ('title', 'send',)
-    success_url = reverse_lazy('list_menu')
+    fields = ('title', 'date',)
+    success_url = reverse_lazy('meals:list_menu')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -62,9 +77,9 @@ class CreateMenu(CreateView):
 @method_decorator(login_required, name='dispatch')
 class UpdateMenu(UpdateView):
     model = Menu
-    fields = ('title', 'send',)
+    fields = ('title', 'date',)
     template_name = 'menu_add.html'
-    success_url = reverse_lazy('list_menu')
+    success_url = reverse_lazy('meals:list_menu')
 
 
 @method_decorator(login_required, name='dispatch')
@@ -94,7 +109,7 @@ class CreateOption(CreateView):
         return super(CreateOption, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('list_option', kwargs={'pk': self.object.menu.pk})
+        return reverse_lazy('meals:list_option', kwargs={'pk': self.object.menu.pk})
 
 
 @method_decorator(login_required, name='dispatch')
@@ -104,7 +119,10 @@ class UpdateOption(UpdateView):
     template_name = 'menu_option_add.html'
 
     def get_success_url(self):
-        return reverse_lazy('list_option', kwargs={'pk': self.object.menu.pk})
+        return reverse_lazy('meals:list_option', kwargs={'pk': self.object.menu.pk})
+
+
+
 
 
 def today_menu(request, uuid):
@@ -136,6 +154,6 @@ def map_form_to_order(form, menu):
     order_instance.employee_identifier = form.cleaned_data['employee_identifier']
     order_instance.option = int(form.cleaned_data['option'])
     order_instance.customization = form.cleaned_data['customization']
-    order_instance.menu_id = menu.id
+    order_instance.menu = menu.id
     return order_instance
 
