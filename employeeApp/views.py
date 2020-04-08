@@ -45,7 +45,7 @@ def employee_meal_choose(request, user_uuid):
             order = Order(
                 menu=choosen_menu,
                 option=choosen_option,
-                employee_identifier=employee,
+                employee_identifier=user_uuid,
                 customization=customization
             )
             order.save()
