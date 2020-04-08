@@ -26,7 +26,7 @@ class Menu(models.Model):
         ordering = ['date']
 
     def __str__(self):
-        return self.date
+        return str(self.date)
 
     def can_choose_menu(self):
         """
@@ -69,4 +69,5 @@ class Order(models.Model):
 def post_menu(instance, **kwargs):
     if False:
         options = Option.objects.filter(menu__id=instance.id)
-        send_slack_notification(options, instance.uuid)
+        #send_slack_notification(options, instance.uuid)
+        #reminder_slack_users(options)
