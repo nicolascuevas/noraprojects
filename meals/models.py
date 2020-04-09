@@ -10,7 +10,7 @@ from django.dispatch import receiver
 from django.utils import timezone
 from datetime import datetime, time
 from meals import helpers
-from employeeApp.models import Employee
+import uuid
 
 
 class Menu(models.Model):
@@ -20,7 +20,7 @@ class Menu(models.Model):
     updated_at = models.DateTimeField(default=timezone.now)
     title = models.CharField(max_length=100, null=True, blank=True)
     date = models.DateField(default=timezone.now, unique=True)
-    uuid = models.UUIDField(default=helpers.generate_uuid())
+    uuid = models.UUIDField(default=uuid.uuid4)
 
     class Meta:
         verbose_name = 'Menu'
@@ -36,7 +36,7 @@ class Menu(models.Model):
         today_date = datetime.now()
         today_time = time(today_date.hour, today_date.minute, today_date.second)
         result = today_time.hour <= 11 and today_time.minute <= 60
-        return result
+        return True
 
     def is_enable(self):
         return self.enable
@@ -55,6 +55,20 @@ class Option(models.Model):
         return self.description
 
 
+class Employee(models.Model):
+    identifier = models.CharField(max_length=64, verbose_name="identifier", default=helpers.generate_uuid())
+
+    class Meta:
+        verbose_name = 'Employee'
+
+    def __str__(self):
+        return str(self.identifier)
+
+    def __unicode__(self):
+        return str(self.identifier)
+
+
+
 class Order(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.DO_NOTHING)
     option = models.ForeignKey(Option, on_delete=models.DO_NOTHING)
@@ -68,6 +82,10 @@ class Order(models.Model):
 
     def __str__(self):
         return self.id
+
+
+
+
         
 
 

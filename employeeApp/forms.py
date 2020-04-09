@@ -18,3 +18,17 @@ class OrderForm(forms.Form):
             print "self.kwargs.items():"
             # self.fields['option'] = forms.ChoiceField(widget=forms.Select, choices=values)
             # self.fields['customization'] = forms.CharField(max_length=170, required=False)
+
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ('city', 'country') #Note that we didn't mention user field here.
+
+    def save(self, user=None):
+        user_profile = super(UserProfileForm, self).save(commit=False)
+        if user:
+            user_profile.user = user
+        user_profile.save()
+        return user_profile

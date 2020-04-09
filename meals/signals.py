@@ -8,3 +8,7 @@ def assign_admin_role(sender, instance, created, **kwargs):
     if created:
         print import_slack_users.delay()
         print reminder_slack_users.delay()
+
+
+def add_uuid_to_menu(sender, instance, created, **kwargs):
+    return False

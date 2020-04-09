@@ -6,19 +6,16 @@ from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
+from helpers import generate_uuid
+from meals.models import Menu, Option, Order, Employee
+from noraprojects.task import import_slack_users, reminder_slack_users
 from forms import OrderForm
-from meals.models import Menu, Option, Order
-from employeeApp.models import Employee
-
-from employeeApp.tasks import import_slack_users, reminder_slack_users
-
 import datetime
 import uuid
 
@@ -124,36 +121,50 @@ class UpdateOption(UpdateView):
 
 
 
-
 def today_menu(request, uuid):
-    date = datetime.today()
-    menu = Menu.objects.get(created_at__year=date.year,
-                            created_at__month=date.month,
-                            created_at__day=date.day,
-                            uuid=uuid)
-
+    template = "menu_show_today.html"
+    #find session emplooye token or create and asign one for identification
+    employee = get_object_or_404(Employee ,identifier=request.session['employee_token'] ) if 'employee_token' in request.session else Employee.objects.create(identifier=generate_uuid())
+    request.session['employee_token'] = str(employee.identifier)
+    #show the menu based on uuid
+    menu = get_object_or_404(Menu, uuid=uuid)
+    #get option for the current menu
     options = Option.objects.filter(menu=menu)
 
     if request.method == 'POST':
         form = OrderForm(request.POST, options=options)
         if form.is_valid():
-            order_instance = map_form_to_order(form, menu)
+            order_instance = map_form_to_order(form, menu, employee)
             order_instance.save()
+            messages.success(
+                request, "Choice added successfully", extra_tags='alert alert-success alert-dismissible fade show')
             return HttpResponseRedirect(request.path_info)
-    else:
-        form = OrderForm(options=options)
-
+    
+    form = OrderForm(options=options)
     context = {'options': options, 'form': form, 'menu': menu}
-    template = "menu_show_today.html"
+
+    if Order.objects.filter(menu=menu, employee=employee).exists():
+        order = Order.objects.get(menu=menu, employee=employee)
+        print "camino"
+        context = {'options': options, 'form': form, 'menu': menu, 'order': order}
+        return render(request, template, context)
     return render(request, template, context)
 
 
-def map_form_to_order(form, menu):
-    order_instance = Order()
-    order_instance.created_at = datetime.now()
-    order_instance.employee = form.cleaned_data['employee']
-    order_instance.option = int(form.cleaned_data['option'])
-    order_instance.customization = form.cleaned_data['customization']
-    order_instance.menu = menu.id
-    return order_instance
+
+def map_form_to_order(form, menu, employee):
+    option = Option.objects.get(pk=int(form.cleaned_data['option']))
+    customization = form.cleaned_data['customization']
+
+    if Order.objects.filter(menu=menu, employee=employee).exists():
+        order = Order.objects.get(menu=menu, employee=employee)
+        order.customization = customization
+        order.option = option
+        return order
+    else:
+        return Order(menu=menu, employee=employee, option=option, customization=customization)
+
+    return False
+
+
 
