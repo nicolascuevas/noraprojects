@@ -38,7 +38,7 @@ class ListOrder(ListView):
         orders = []
         for order in menu_orders:
             option = Option.objects.filter(id=order.option.id).first()
-            employee = Employee.objects.filter(identifier=order.employee_identifier).first()
+            employee = Employee.objects.filter(identifier=order.employee).first()
             orders.append(
                 {
                     'order': order,
@@ -151,7 +151,7 @@ def today_menu(request, uuid):
 def map_form_to_order(form, menu):
     order_instance = Order()
     order_instance.created_at = datetime.now()
-    order_instance.employee_identifier = form.cleaned_data['employee_identifier']
+    order_instance.employee = form.cleaned_data['employee']
     order_instance.option = int(form.cleaned_data['option'])
     order_instance.customization = form.cleaned_data['customization']
     order_instance.menu = menu.id

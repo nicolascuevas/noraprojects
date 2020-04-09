@@ -17,7 +17,7 @@ def employee_meal_choose(request, user_uuid):
     message = "Selecciona La Opción que más te guste."
     template = 'employeeApp/employee_meal_choose.html'
     user_uuid = uuid.UUID(user_uuid).hex
-    employee = Employee.objects.get(identifier=user_uuid)
+    employee = Employee.objects.get(id=user_uuid)
 
     current_date = datetime.datetime.now()
     year = current_date.strftime("%Y")
@@ -41,16 +41,16 @@ def employee_meal_choose(request, user_uuid):
         customization = request.POST.get("customization")
         
 
-        if len( Order.objects.filter(employee_identifier=user_uuid, menu__id=choosen_menu.id) ) == 0:
+        if len( Order.objects.filter(employee=employee, menu__id=choosen_menu.id) ) == 0:
             order = Order(
                 menu=choosen_menu,
                 option=choosen_option,
-                employee_identifier=user_uuid,
+                employee=employee,
                 customization=customization
             )
             order.save()
         else:
-            order = Order.objects.filter(employee_identifier=user_uuid, menu=choosen_menu)[0]
+            order = Order.objects.filter(employee=employee, menu=choosen_menu)[0]
             order.customization = customization
             order.option = choosen_option
             order.save()

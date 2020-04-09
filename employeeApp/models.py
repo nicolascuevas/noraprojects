@@ -16,10 +16,10 @@ import uuid
 
 
 class Employee(models.Model):
-    identifier = models.UUIDField(primary_key=True, null= False, default=uuid.uuid4, editable=False)
-    email = models.EmailField(max_length=70, null=False, blank=True)
-    name = models.CharField(max_length=10, null=False, blank=True)
-    slack_id = models.CharField(max_length=20, null=False, blank=True, unique=True)
+    identifier = models.CharField(max_length=64, verbose_name="identifier", default=uuid.uuid1())
+    # email = models.EmailField(max_length=70, null=False, blank=True)
+    # name = models.CharField(max_length=10, null=False, blank=True)
+    # slack_id = models.CharField(max_length=20, null=False, blank=True, unique=True)
 
     class Meta:
         verbose_name = 'Employee'
