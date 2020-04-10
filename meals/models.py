@@ -10,6 +10,7 @@ from django.dispatch import receiver
 from django.utils import timezone
 from datetime import datetime, time
 from meals import helpers
+from noraprojects.task import send_slack_notification
 import uuid
 
 
@@ -92,7 +93,4 @@ class Order(models.Model):
 
 @receiver(post_save, sender=Menu)
 def post_menu(instance, **kwargs):
-    if False:
-        options = Option.objects.filter(menu__id=instance.id)
-        #send_slack_notification(options, instance.uuid)
-        #reminder_slack_users(options)
+    send_slack_notification.delay(instance.uuid)

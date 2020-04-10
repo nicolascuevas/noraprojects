@@ -15,10 +15,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from helpers import generate_uuid
 from meals.models import Menu, Option, Order, Employee
-from noraprojects.task import import_slack_users, reminder_slack_users
 from forms import OrderForm
 import datetime
 import uuid
+
+from noraprojects.task import send_slack_notification
 
 
 class BuildTrigger(APIView):
@@ -54,8 +55,6 @@ class ListMenu(ListView):
     context_object_name = 'menu'
 
     def get_queryset(self):
-        print import_slack_users.delay()
-        print reminder_slack_users.delay()
         if self.request.user.is_authenticated():
             return Menu.objects.filter(user=self.request.user)
 
@@ -123,7 +122,8 @@ class UpdateOption(UpdateView):
 
 
 def today_menu(request, uuid):
-    template = "menu_show_today.html"
+    
+    template = "meals/menu_show_today.html"
     #find session emplooye token or create and asign one for identification
     employee = get_object_or_404(Employee ,identifier=request.session['employee_token'] ) if 'employee_token' in request.session else Employee.objects.create(identifier=generate_uuid())
     request.session['employee_token'] = str(employee.identifier)
@@ -133,15 +133,20 @@ def today_menu(request, uuid):
     options = Option.objects.filter(menu=menu)
 
     if request.method == 'POST':
-        form = OrderForm(request.POST, options=options)
+        form = OrderForm(request.POST)
         if form.is_valid():
-            order_instance = map_form_to_order(form, menu, employee)
-            order_instance.save()
+            form.employee = employee
+            instance = form.save(commit=False)
+            instance.save
+            #order_instance = map_form_to_order(form, menu, employee)
+            #order_instance.save()
             messages.success(
                 request, "Choice added successfully", extra_tags='alert alert-success alert-dismissible fade show')
-            return HttpResponseRedirect('meals:selected_menu')
+            return redirect('meals:selected_menu')
+        else:
+            print "error"
     
-    form = OrderForm(options=options)
+    form = OrderForm(instance=Order.objects.all()[0])
     context = {'options': options, 'form': form, 'menu': menu}
 
     if Order.objects.filter(menu=menu, employee=employee).exists():
@@ -170,6 +175,7 @@ def map_form_to_order(form, menu, employee):
 
 def today_menu_show(request, uuid):
     template = "meals/menu_show_selection.html"
+    menu = get_object_or_404(Menu, uuid=uuid)
 
     context = {}
 
