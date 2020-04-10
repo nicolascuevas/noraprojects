@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import render,get_object_or_404
 from django.urls import reverse_lazy
@@ -138,7 +139,7 @@ def today_menu(request, uuid):
             order_instance.save()
             messages.success(
                 request, "Choice added successfully", extra_tags='alert alert-success alert-dismissible fade show')
-            return HttpResponseRedirect(request.path_info)
+            return HttpResponseRedirect('meals:selected_menu')
     
     form = OrderForm(options=options)
     context = {'options': options, 'form': form, 'menu': menu}
@@ -165,6 +166,14 @@ def map_form_to_order(form, menu, employee):
         return Order(menu=menu, employee=employee, option=option, customization=customization)
 
     return False
+
+
+def today_menu_show(request, uuid):
+    template = "meals/menu_show_selection.html"
+
+    context = {}
+
+    return render(request, template, context)
 
 
 
