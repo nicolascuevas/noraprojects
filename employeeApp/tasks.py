@@ -11,11 +11,6 @@ import json
 import uuid
 
 
-@app.task
-def prueba_suma(x, y):
-    return x + y
-
-
 
 @app.task
 def import_slack_users():

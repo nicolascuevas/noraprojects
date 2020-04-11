@@ -20,6 +20,7 @@
                     <tr>
                         <td>{{ current_menu.title }}</td>
                         <td>{{ current_menu.date }}</td>
+                        <td>{{ current_menu.uuid }}</td>
                         <td>
                             <a href="{% url 'meals:update_menu' current_menu.pk %}" title="Edit"><i class="fa fa-pencil"></i></a>
                             <a href="{% url 'meals:list_option' current_menu.pk %}" title="Options"><i class="fa fa-eye"></i></a>

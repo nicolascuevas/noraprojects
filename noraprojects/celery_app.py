@@ -27,11 +27,8 @@ app.conf.update(
 )
 
 
+app.conf.timezone = 'America/Santiago'
 
-
-app.conf.timezone = 'UTC'
-
-CELERY_TIMEZONE = 'UTC'
 
 @app.task(bind=True)
 def debug_task(self):
