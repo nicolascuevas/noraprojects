@@ -11,6 +11,7 @@ from meals import helpers
 from meals.models import Menu, Option, Order, Employee
 import uuid
 
+from django.db import IntegrityError
 import warnings
 import exceptions
 
@@ -35,15 +36,14 @@ class mealsTest(TestCase):
             is_staff=False
         )
 
-    def create_menu(self, username, first_name, last_name, title="Test Menu",
-                    created_at=datetime.now(), updated_at=datetime.now()):
+    def create_menu(self, user, title="Test Menu", date=datetime.now(), created_at=datetime.now(), updated_at=datetime.now()):
 
         return Menu.objects.create(
-            user=self.create_user(username, first_name, last_name),
-            created_at=created_at,
-            updated_at=updated_at,
+            user=user,
+            date=date,
             title=title,
-            date= created_at
+            created_at=created_at,
+            updated_at=updated_at
         )
 
     def create_option(self, menu, description, created_at, updated_at):
@@ -66,7 +66,16 @@ class mealsTest(TestCase):
 
     def test_user_creation(self):
         user = self.create_user("randomName", "firstName", "lastName")
+        #get all users from db
+        users = User.objects.all()
+        #test quantity
+        self.assertEquals(users.count(), 1)
+        #test type
         self.assertTrue(isinstance(user, User))
+        #test user info
+        self.assertEquals(user.username, "randomName")
+        self.assertEquals(user.first_name, "firstName")
+        self.assertEquals(user.last_name, "lastName")
 
 ## Employee Test
 
@@ -80,15 +89,30 @@ class mealsTest(TestCase):
 
     def test_menu_creation(self):
         date = datetime( 2019, 10,10) ##arbitrary date
-        print date
-        menu = self.create_menu("testuser", "Test", "User", "Test Menu", date, date)
+        user = self.create_user("randomName", "firstName", "lastName")
+        menu = self.create_menu(user, "menuTitle", date, date, date)
         self.assertTrue(isinstance(menu, Menu))
 
-    # def test_option_creation(self):
-    #     menu = self.create_menu("testuser", "Test", "User", "Test Menu", datetime.now(), datetime.now())
-    #     option = self.create_option(menu ,"Arroz", datetime.now(), datetime.now())
-    #     self.assertTrue(isinstance(option, Option))
-    #     self.assertEqual(option.__str__(), option.description)
+    def test_menu_date_uniqueness(self):
+        date = datetime( 2019, 10,10) ##arbitrary date
+        user = self.create_user("randomName", "firstName", "lastName")
+        menu_1 = self.create_menu(user, "menuTitle", date, date, date)
+
+        with self.assertRaises(IntegrityError):
+            self.create_menu(user, "menuTitle", date, date, date)
+
+
+
+##Option Test
+
+    def test_option_creation(self):
+        date = datetime( 2019, 10,10) ##arbitrary date
+        user = self.create_user("randomName", "firstName", "lastName")
+        menu = self.create_menu(user, "menuTitle", date, date, date)
+        option = self.create_option(menu ,"Arroz", datetime.now(), datetime.now())
+        self.assertTrue(isinstance(option, Option))
+        self.assertEqual(option.__str__(), option.description)
+        self.assertTrue(option.description)
 
     # def test_order_creation(self):
     #     menu = self.create_menu("testuser", "Test", "User", "Test Menu", datetime.now(), datetime.now())

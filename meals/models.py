@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 # Create your models here.
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import NON_FIELD_ERRORS
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.db.models import signals
@@ -11,11 +12,12 @@ from django.dispatch import receiver
 from django.utils import timezone
 from datetime import datetime, time
 from meals import helpers
+
 import uuid
 
 
 class Menu(models.Model):
-    user = models.ForeignKey(User, null=True, blank=True)
+    user = models.ForeignKey(User, null=False, blank=False)
     enable = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -27,27 +29,36 @@ class Menu(models.Model):
         verbose_name = 'Menu'
         ordering = ['date']
 
+
     def __str__(self):
         return str(self.date)
+
+    def validate_unique(self, *args, **kwargs):
+        super(Room, self).validate_unique(*args, **kwargs)
+        qs = Room.objects.filter(name=self.name)
+        if qs.filter(zone__site=self.zone__site).exists():
+            raise ValidationError({'name':['Name must be unique per site',]})
 
     def can_choose_menu(self):
         """
             Choose their preferred meal (until 11 AM CLT)
         """
-        local_time = timezone.make_aware(datetime.datetime.now(),timezone.get_default_timezone())
-        local_time = local_time.replace(   year=int(self.date.strftime('%Y')), 
-                                month=int(self.date.strftime('%m')), 
-                                day=int(seld.date.strftime('%d')), 
-                                hour=14, 
-                                minute=15, 
-                                second=00)
+        current_local_time = timezone.make_aware(datetime.datetime.now(),timezone.get_default_timezone())
+        menu_local_time = timezone.make_aware(datetime.datetime.now(),timezone.get_default_timezone())
+        menu_local_time = menu_local_time.replace(   year=int(self.date.strftime('%Y')), 
+                                    month=int(self.date.strftime('%m')), 
+                                    day=int(self.date.strftime('%d')), 
+                                    hour=11, 
+                                    minute=0, 
+                                    second=0)
+
         print "localtime"
-        print local_time
+        print menu_local_time
         
-        today_date = datetime.now()
-        today_time = time(today_date.hour, today_date.minute, today_date.second)
-        result = today_time.hour <= 11 and today_time.minute <= 60
-        return True
+        # today_date = datetime.now()
+        # today_time = time(today_date.hour, today_date.minute, today_date.second)
+        # result = today_time.hour <= 11 and today_time.minute <= 60
+        return current_local_time > menu_local_time
 
     def is_enable(self):
         return self.enable

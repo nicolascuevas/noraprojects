@@ -146,7 +146,7 @@ def today_menu(request, uuid):
         else:
             print "error"
     
-    form = OrderForm(instance=Order.objects.all()[0])
+    form = OrderForm(menu=menu)
     context = {'options': options, 'form': form, 'menu': menu}
 
     if Order.objects.filter(menu=menu, employee=employee).exists():
