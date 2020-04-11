@@ -6,11 +6,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
+from django.db.models import signals
 from django.dispatch import receiver
 from django.utils import timezone
 from datetime import datetime, time
 from meals import helpers
-from noraprojects.task import send_slack_notification
 import uuid
 
 
@@ -56,6 +56,7 @@ class Option(models.Model):
         return self.description
 
 
+
 class Employee(models.Model):
     identifier = models.CharField(max_length=64, verbose_name="identifier", default=helpers.generate_uuid())
 
@@ -67,6 +68,7 @@ class Employee(models.Model):
 
     def __unicode__(self):
         return str(self.identifier)
+
 
 
 
@@ -85,12 +87,3 @@ class Order(models.Model):
         return self.id
 
 
-
-
-        
-
-
-
-@receiver(post_save, sender=Menu)
-def post_menu(instance, **kwargs):
-    send_slack_notification.delay(instance.uuid)
