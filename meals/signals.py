@@ -8,14 +8,14 @@ from django.utils import timezone
 
 @receiver(post_save, sender=Menu)
 def menu_saved(sender, instance, **kwargs):
+    #set the reminder at 9 am of the menus date after de menu is created
     menu = instance
     time = timezone.make_aware(datetime.datetime.now(),timezone.get_default_timezone())
     time = time.replace(   year=int(menu.date.strftime('%Y')), 
                                 month=int(menu.date.strftime('%m')), 
                                 day=int(menu.date.strftime('%d')), 
-                                hour=14, 
-                                minute=26, 
-                                second=00)
-    print time
+                                hour=9, 
+                                minute=0, 
+                                second=0)
     #set de reminder for a specific task in santiago's local time
     send_slack_notification.apply_async(args=[], kwargs={'uuid': menu.uuid}, eta=time)

@@ -34,6 +34,16 @@ class Menu(models.Model):
         """
             Choose their preferred meal (until 11 AM CLT)
         """
+        local_time = timezone.make_aware(datetime.datetime.now(),timezone.get_default_timezone())
+        local_time = local_time.replace(   year=int(self.date.strftime('%Y')), 
+                                month=int(self.date.strftime('%m')), 
+                                day=int(seld.date.strftime('%d')), 
+                                hour=14, 
+                                minute=15, 
+                                second=00)
+        print "localtime"
+        print local_time
+        
         today_date = datetime.now()
         today_time = time(today_date.hour, today_date.minute, today_date.second)
         result = today_time.hour <= 11 and today_time.minute <= 60
