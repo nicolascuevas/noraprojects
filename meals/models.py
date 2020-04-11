@@ -17,8 +17,8 @@ import uuid
 class Menu(models.Model):
     user = models.ForeignKey(User, null=True, blank=True)
     enable = models.BooleanField(default=False)
-    created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     title = models.CharField(max_length=100, null=True, blank=True)
     date = models.DateField(default=timezone.now, unique=True)
     uuid = models.UUIDField(default=uuid.uuid4)
@@ -57,7 +57,7 @@ class Option(models.Model):
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE)
     description = models.CharField(max_length=370, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = 'Option'
@@ -69,6 +69,8 @@ class Option(models.Model):
 
 class Employee(models.Model):
     identifier = models.CharField(max_length=64, verbose_name="identifier", default=helpers.generate_uuid())
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = 'Employee'
@@ -88,6 +90,7 @@ class Order(models.Model):
     menu = models.ForeignKey(Menu, on_delete=models.DO_NOTHING)
     customization = models.CharField(max_length=170, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = 'Employee Order'
