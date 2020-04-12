@@ -28,10 +28,11 @@
 - is activate before 11 (local time)
 
 #### views
-- Show form fields (Pending)
-- Show model menu (Pending)
-- show dished optons (Pending)
-- show answers fto Nora (Pending)
+- Show new (Done)
+- Show model menu (Done)
+- show dished optons (Done)
+- show answers fto Nora (Done)
+- 
 
 
 ###Option
@@ -41,22 +42,22 @@
 - prevent create option without description (Done)
 
 #### views
-- show crea (Pending)
+- show create (Done)
 - show edit (Pending)
 - validation showing (Pending)
 
 ###Order
 
 #### Model
-- create Order before 11 of the meal date (Pending)
-- create Order after 11 of the meal date (Pending)
+- create Order before 11 of the meal date (Done)
+- create Order after 11 of the meal date (Dpne)
 - edit order with employee id (Done)
 
 
 #### views
-- show new (Pending)
-- show edit (Pending)
-- show answer (Pending)
+- show new (Done)
+- show edit (Done)
+- show answer (Done)
 
 
 
