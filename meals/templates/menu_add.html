@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if form.errors %}
+<div id="form-error">
+	<p>The operation could not be performed because one or more error(s) occurred.<br />Please resubmit the form after making the following changes:</p>
+	<ul>
+	{% for field in form %}
+	<li>{{ field.errors|striptags }}</li>
+	{% endfor %}
+	</ul>
+</div>
+{% endif %}
 <div class="row">
     <div class="col-lg-6">
         <h3>New menu</h3>

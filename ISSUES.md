@@ -25,7 +25,7 @@
 #### model
 - menu creation (Done)
 - unique menu per date (Done)
-- is activate before 11 (local time)
+- is activate before 11 (local time) (done)
 
 #### views
 - Show new (Done)
@@ -50,7 +50,7 @@
 
 #### Model
 - create Order before 11 of the meal date (Done)
-- create Order after 11 of the meal date (Dpne)
+- create Order after 11 of the meal date (Done)
 - edit order with employee id (Done)
 
 
