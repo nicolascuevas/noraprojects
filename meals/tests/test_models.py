@@ -12,8 +12,10 @@ from meals.models import Menu, Option, Order, Employee
 import uuid
 
 from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 import warnings
 import exceptions
+import mock
 
 
 
@@ -170,7 +172,16 @@ class mealsTest(TestCase):
         self.assertEqual(option_2.order_count, 1)
         self.assertEqual(order.menu.order_count, 1)
 
-    ##test after due date 11pm Santiago
 
-
+    def test_order_create_by_employee_after_due_date(self):
+        # edit and create is allowed to future dates
+        date = datetime.now() - timedelta(1) 
+        employee = self.create_employee(helpers.generate_uuid())
+        user = self.create_user("randomName", "firstName", "lastName")
+        menu = self.create_menu(user, "menuTitle", date, date, date)
+        option = self.create_option(menu ,"Arroz", datetime.now(), datetime.now())
+        customization = "customization example"
+        #order = self.create_order(menu, option, employee, customization)
+        with self.assertRaises(ValidationError):
+            self.create_order(menu, option, employee, customization)
 
