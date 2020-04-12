@@ -33,11 +33,6 @@ class Menu(models.Model):
     def __str__(self):
         return str(self.date)
 
-    def validate_unique(self, *args, **kwargs):
-        super(Room, self).validate_unique(*args, **kwargs)
-        qs = Room.objects.filter(name=self.name)
-        if qs.filter(zone__site=self.zone__site).exists():
-            raise ValidationError({'name':['Name must be unique per site',]})
 
     def can_choose_menu(self):
         """
@@ -52,13 +47,14 @@ class Menu(models.Model):
                                     minute=0, 
                                     second=0)
 
-        print "localtime"
+        print "localtime jajaaj"
         print menu_local_time
         
         # today_date = datetime.now()
         # today_time = time(today_date.hour, today_date.minute, today_date.second)
         # result = today_time.hour <= 11 and today_time.minute <= 60
-        return current_local_time > menu_local_time
+        # return current_local_time > menu_local_time
+        return True
 
     def is_enable(self):
         return self.enable
@@ -66,7 +62,7 @@ class Menu(models.Model):
 
 class Option(models.Model):
     menu = models.ForeignKey(Menu, on_delete=models.CASCADE)
-    description = models.CharField(max_length=370, null=True, blank=True)
+    description = models.CharField(max_length=370, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -108,6 +104,7 @@ class Order(models.Model):
         unique_together = ('menu', 'employee')
 
     def __str__(self):
-        return self.id
+        return str(self.id)
+        
 
 

@@ -4,6 +4,7 @@
 - fix menu enabled, only allow to choose meal before 11am in Santiago (Pending)
 - fix the timezone in de created_At and Update_at in all models (Done)
 - date uniquenes un menu model
+- orders result base on menu (pending)
 
 ## Celery
 
