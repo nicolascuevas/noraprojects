@@ -35,7 +35,9 @@ class ListOrder(ListView):
     context_object_name = "orders"
 
     def get_queryset(self):
-        menu_orders = Order.objects.filter(menu=self.kwargs['pk'])
+        menu = Menu.objects.get(pk=self.kwargs['pk'])
+        menu_orders = Order.objects.filter(menu=menu)
+        print menu.get_order_count()
         orders = []
         for order in menu_orders:
             option = Option.objects.filter(id=order.option.id).first()
@@ -48,6 +50,15 @@ class ListOrder(ListView):
                 }
             )
         return orders
+
+    def get_context_data(self, **kwargs):
+        ctx = super(ListOrder, self).get_context_data(**kwargs)
+        menu = Menu.objects.get(pk=self.kwargs['pk'])
+        options = Option.objects.filter(menu=menu)
+        ctx['menu'] = menu
+        ctx['options'] = options
+        
+        return ctx
 
 
 @method_decorator(login_required, name='dispatch')
@@ -186,7 +197,8 @@ class UpdateOrder(UpdateView):
         if employee != order.employee:
             return redirect(reverse_lazy('meals:selected_menu', kwargs={'uuid': uuid}))
         print self.kwargs.get("pk")
-        return render(request, self.template_name, {'form': form, 'menu': menu, 'options': options})
+        can_choose = menu.can_choose_menu
+        return render(request, self.template_name, {'form': form, 'menu': menu, 'options': options, 'can_choose': can_choose})
 
     def form_valid(self, form):
         return super(UpdateOrder, self).form_valid(form)

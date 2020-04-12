@@ -38,8 +38,8 @@ class Menu(models.Model):
         """
             Choose their preferred meal (until 11 AM CLT)
         """
-        current_local_time = timezone.make_aware(datetime.datetime.now(),timezone.get_default_timezone())
-        menu_local_time = timezone.make_aware(datetime.datetime.now(),timezone.get_default_timezone())
+        current_local_time = timezone.make_aware(datetime.now(),timezone.get_default_timezone())
+        menu_local_time = timezone.make_aware(datetime.now(),timezone.get_default_timezone())
         menu_local_time = menu_local_time.replace(   year=int(self.date.strftime('%Y')), 
                                     month=int(self.date.strftime('%m')), 
                                     day=int(self.date.strftime('%d')), 
@@ -48,16 +48,22 @@ class Menu(models.Model):
                                     second=0)
 
         print "localtime jajaaj"
+        print current_local_time
         print menu_local_time
         
         # today_date = datetime.now()
         # today_time = time(today_date.hour, today_date.minute, today_date.second)
         # result = today_time.hour <= 11 and today_time.minute <= 60
-        return False
+        return current_local_time < menu_local_time
 
 
     def is_enable(self):
         return self.enable
+
+    def get_order_count(self):
+        return Order.objects.filter(menu=self).count()
+
+    order_count = property(fget=get_order_count)
 
 
 class Option(models.Model):
@@ -71,6 +77,10 @@ class Option(models.Model):
 
     def __str__(self):
         return self.description
+
+    def get_order_count(self):
+        return Order.objects.filter(option=self).count()
+    order_count = property(fget=get_order_count)
 
 
 
@@ -105,6 +115,7 @@ class Order(models.Model):
 
     def __str__(self):
         return str(self.id)
+
         
 
 

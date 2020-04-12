@@ -1,10 +1,15 @@
 ## Functionlaities
-- create order with Employee (Done)
-- asign a user_uuid SESSION to the employee that get in platform to keep their answers unique (Done)
-- fix menu enabled, only allow to choose meal before 11am in Santiago (Pending)
-- fix the timezone in de created_At and Update_at in all models (Done)
-- date uniquenes un menu model
-- orders result base on menu (pending)
+- Create order with Employee (Done)
+- Asign a user_uuid SESSION to the employee that get in platform to keep their answers unique (Done)
+- Fix menu enabled, only allow to choose meal before 11am in Santiago (Done)
+- Fix the timezone in de created_At and Update_at in all models (Done)
+- Date uniquenes un menu model (Done)
+- Orders result base on menu (Done)
+- Show orders count for nora (Done)
+- Employees can edit their orders (Done)
+- Use and asign SESSION to identify employees.
+- employees can only make 1 order per meal
+- prevent edit for old meals
 
 ## Celery
 
