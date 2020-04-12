@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from random import randint
 
 from django.contrib.auth.models import User
@@ -54,12 +54,12 @@ class mealsTest(TestCase):
             updated_at=updated_at
         )
 
-    def create_order(self, menu, option, user_uuid, customization):
+    def create_order(self, menu, option, employee, customization=""):
         return Order.objects.create(
-                    employee_identifier=user_uuid,
+                    employee=employee,
                     option=option,
                     menu=menu,
-                    customization="any customization"
+                    customization=customization
                 )
 
 ##user Tests
@@ -84,6 +84,13 @@ class mealsTest(TestCase):
         self.assertTrue(isinstance(employee, Employee))
         self.assertEqual(employee.__str__(), employee.identifier)
 
+    def test_employee_uniqueness(self):
+        generated_uuid = helpers.generate_uuid()
+        employee_1 = self.create_employee(generated_uuid)
+        with self.assertRaises(IntegrityError):
+            self.create_employee(generated_uuid)
+
+
 
 ##Menu test
 
@@ -97,7 +104,6 @@ class mealsTest(TestCase):
         date = datetime( 2019, 10,10) ##arbitrary date
         user = self.create_user("randomName", "firstName", "lastName")
         menu_1 = self.create_menu(user, "menuTitle", date, date, date)
-
         with self.assertRaises(IntegrityError):
             self.create_menu(user, "menuTitle", date, date, date)
 
@@ -114,12 +120,57 @@ class mealsTest(TestCase):
         self.assertEqual(option.__str__(), option.description)
         self.assertTrue(option.description)
 
-    # def test_order_creation(self):
-    #     menu = self.create_menu("testuser", "Test", "User", "Test Menu", datetime.now(), datetime.now())
-    #     option = self.create_option(menu ,"Arroz", datetime.now(), datetime.now())
-    #     employee = self.create_employee(helpers.generate_uuid(), "applicant26dsa6", "slackuser")
-    #     user_uuid = uuid.UUID(employee.identifier).hex
+    def test_option_creation_with_null_description(self):
+        date = datetime( 2019, 10,10) ##arbitrary date
+        user = self.create_user("randomName", "firstName", "lastName")
+        menu = self.create_menu(user, "menuTitle", date, date, date)
+        with self.assertRaises(IntegrityError):
+            self.create_option(menu , None, datetime.now(), datetime.now())
 
-    #     order = self.create_order(menu, option, user_uuid, "any customization")
 
-    #     self.assertTrue(isinstance(order, Order))
+## Orders Test
+
+    def test_order_creation_before_due_date(self):
+        # edit and create is allowed to future dates
+        date = datetime.now() + timedelta(1) 
+        employee = self.create_employee(helpers.generate_uuid())
+        user = self.create_user("randomName", "firstName", "lastName")
+        menu = self.create_menu(user, "menuTitle", date, date, date)
+        option = self.create_option(menu ,"Arroz", datetime.now(), datetime.now())
+        customization = "customization example"
+        order = self.create_order(menu, option, employee, customization)
+
+        self.assertTrue(isinstance(order, Order))
+        self.assertTrue(isinstance(order.menu, Menu))
+        self.assertTrue(isinstance(order.employee, Employee))
+        self.assertTrue(isinstance(order.option, Option))
+
+    def test_order_edit_by_employee(self):
+        # edit and create is allowed to future dates
+        date = datetime.now() + timedelta(1) 
+        employee = self.create_employee(helpers.generate_uuid())
+        user = self.create_user("randomName", "firstName", "lastName")
+        menu = self.create_menu(user, "menuTitle", date, date, date)
+        option_1 = self.create_option(menu ,"Arroz", datetime.now(), datetime.now())
+        option_2 = self.create_option(menu ,"Pure", datetime.now(), datetime.now())
+        customization = "customization example"
+        order = self.create_order(menu, option_1, employee, customization)
+        #1 selection and count totals and count selection
+        self.assertEqual(order.option.__str__(), "Arroz")
+        self.assertEqual(option_1.order_count, 1)
+        self.assertEqual(option_2.order_count, 0)
+        self.assertEqual(order.menu.order_count, 1)
+        ##change selection
+        order.option = option_2
+        order.save()
+        self.assertTrue(isinstance(order, Order))
+        ##counts validations
+        self.assertEqual(order.option.__str__(), "Pure")
+        self.assertEqual(option_1.order_count, 0)
+        self.assertEqual(option_2.order_count, 1)
+        self.assertEqual(order.menu.order_count, 1)
+
+    ##test after due date 11pm Santiago
+
+
+

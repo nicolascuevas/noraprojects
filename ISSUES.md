@@ -37,9 +37,8 @@
 ###Option
 
 #### Model
-- create option to menu (Pending)
-- prevent create option without menu or description (Pending)
-- edit option (Pending)
+- create option to menu (Done)
+- prevent create option without description (Done)
 
 #### views
 - show crea (Pending)
@@ -49,10 +48,9 @@
 ###Order
 
 #### Model
-- create Order  (Pending)
-- prevent prder creation withput al lvalues (Pending)
-- edit order with employee id (Pending)
-- create only before 11pm (localtime)
+- create Order before 11 of the meal date (Pending)
+- create Order after 11 of the meal date (Pending)
+- edit order with employee id (Done)
 
 
 #### views
