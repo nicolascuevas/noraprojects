@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6">
+        ¡Hola! <br>
+        Dejo el menú de hoy - {{ menu.date }}<br><br>
+        <div>
+            {% for menu_option in options %}
+                {{ forloop.counter }}) {{ menu_option.description }} <br>
+            {% endfor %}
+            <br>
+        </div>
+        ¡Tengan lindo día!
+    </div>
+</div>
+    <br><br>
+    {% if menu.can_choose_menu == True %}
+        <div class="row">
+            <h3>¿Que quieres almorzar?</h3>
+        </div>
+        <br><br>
+    {% endif %}
+    <div class="row">
+        {% if menu.can_choose_menu != True %}
+            <h5>Cocina cerrada.</h5>
+        {% else %}
+            <div class="col-lg-6">
+                <form action="" method="post">{% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" value="Save" />
+                </form>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

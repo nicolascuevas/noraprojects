@@ -16,4 +16,11 @@ urlpatterns = [
 
     url(r'^orders/(?P<pk>[0-9]+)/$', ListOrder.as_view(), name="list_order"),
 
+    url(r'^menu/(?P<uuid>[0-9a-f-]+)$', CreateOrder.as_view(), name='today_menu2'),
+    url(r'^menu/(?P<uuid>[0-9a-f-]+)/show$', today_menu_show, name='selected_menu'),
+    url(r'^menu/edit/(?P<pk>\d+)$', UpdateOrder.as_view(), name='edit_menu'),
+
+
+
+
 ]
