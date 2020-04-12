@@ -12,6 +12,8 @@
                 <tr>
                     <th>Title</th>
                     <th>Date</th>
+                    <th>Orders</th>
+                    <th>UUID</th>
                     <th>Actions</th>
                 </tr>
               </thead>
@@ -20,11 +22,11 @@
                     <tr>
                         <td>{{ current_menu.title }}</td>
                         <td>{{ current_menu.date }}</td>
+                        <td>{{ current_menu.order_count }} <br> <a href="{% url 'meals:list_order' current_menu.pk %}" title="View Orders">Show Orders</a></td>
                         <td>{{ current_menu.uuid }}</td>
                         <td>
-                            <a href="{% url 'meals:update_menu' current_menu.pk %}" title="Edit"><i class="fa fa-pencil"></i></a>
-                            <a href="{% url 'meals:list_option' current_menu.pk %}" title="Options"><i class="fa fa-eye"></i></a>
-                            <a href="{% url 'meals:list_order' current_menu.pk %}" title="View Orders"><i class="fa fa-book"></i></a>
+                            <a href="{% url 'meals:update_menu' current_menu.pk %}" title="Edit">Edit</a>
+                            <a href="{% url 'meals:list_option' current_menu.pk %}" title="Options">Options</a>
                         </td>
                     </tr>
                 {% endfor %}

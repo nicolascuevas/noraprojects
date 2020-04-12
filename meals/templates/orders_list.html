@@ -6,26 +6,50 @@
     <div>
         {% if orders %}
             <a href="{% url 'meals:list_menu' %}" class="btn btn-primary">Return to menu list</a></h5>
+            <h3>Summary</h3>
+
+            <table class="table table-striped table-sm">
+              <thead class="thead-inverse">
+                <tr>
+                    <th>Option</th>
+                    <th>Orders</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for option in options %}
+                    <tr>
+                        <td>{{ option.description }}</td>
+                        <td>{{ option.order_count }}</td>
+                    </tr>
+                {% endfor %}
+              </tbody>
+              <tfoot>
+                  <tr>
+                    <th>Total</th>
+                    <th>{{menu.order_count}}</th>
+                </tr>
+              </tfoot>
+            </table>
+
+            <h3>Details</h3>
             <table class="table table-striped table-sm">
               <thead class="thead-inverse">
                 <tr>
                     <th>Employee Identifier</th>
-                    <th>Slack</th>
                     <th>Option</th>
-                    <th>Date</th>
+                    <th>Customization</th>
                 </tr>
               </thead>
               <tbody>
                 {% for entry in orders %}
                     <tr>
-                        <td>{{ entry.order.employee_identifier }}</td>
-                        <td>{{ entry.employee.name }}</td>
+                        <td>{{ entry.employee.id }}</td>
                         <td>{{ entry.option.description }}</td>
-                        <td>{{ entry.order.created_at }}</td>
+                        <td> <p>{{ entry.order.customization }}</p></td>
                     </tr>
                 {% endfor %}
               </tbody>
-            </table>
+            </table> 
         {% else %}
             <h4>There are no orders for this menu :(</h4><br>
             <a href="{% url 'meals:list_menu' %}" class="btn btn-primary">Return to menu list</a></h5>

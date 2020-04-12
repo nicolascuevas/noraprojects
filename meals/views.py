@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import render,get_object_or_404
@@ -16,6 +17,7 @@ from rest_framework.response import Response
 from helpers import generate_uuid
 from meals.models import Menu, Option, Order, Employee
 from forms import OrderForm
+from django.contrib.auth.mixins import PermissionRequiredMixin
 import datetime
 import uuid
 
@@ -33,7 +35,9 @@ class ListOrder(ListView):
     context_object_name = "orders"
 
     def get_queryset(self):
-        menu_orders = Order.objects.filter(menu=self.kwargs['pk'])
+        menu = Menu.objects.get(pk=self.kwargs['pk'])
+        menu_orders = Order.objects.filter(menu=menu)
+        print menu.get_order_count()
         orders = []
         for order in menu_orders:
             option = Option.objects.filter(id=order.option.id).first()
@@ -46,6 +50,15 @@ class ListOrder(ListView):
                 }
             )
         return orders
+
+    def get_context_data(self, **kwargs):
+        ctx = super(ListOrder, self).get_context_data(**kwargs)
+        menu = Menu.objects.get(pk=self.kwargs['pk'])
+        options = Option.objects.filter(menu=menu)
+        ctx['menu'] = menu
+        ctx['options'] = options
+        
+        return ctx
 
 
 @method_decorator(login_required, name='dispatch')
@@ -120,66 +133,97 @@ class UpdateOption(UpdateView):
 
 
 
+class CreateOrder(CreateView):
+    model = Order
+    template_name = 'meals/employee_meal_choose.html'
+    form_class = OrderForm
 
-def today_menu(request, uuid):
-    
-    template = "meals/menu_show_today.html"
-    #find session emplooye token or create and asign one for identification
-    employee = get_object_or_404(Employee ,identifier=request.session['employee_token'] ) if 'employee_token' in request.session else Employee.objects.create(identifier=generate_uuid())
-    request.session['employee_token'] = str(employee.identifier)
-    #show the menu based on uuid
-    menu = get_object_or_404(Menu, uuid=uuid)
-    #get option for the current menu
-    options = Option.objects.filter(menu=menu)
 
-    if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            form.employee = employee
-            instance = form.save(commit=False)
-            instance.save
-            #order_instance = map_form_to_order(form, menu, employee)
-            #order_instance.save()
-            messages.success(
-                request, "Choice added successfully", extra_tags='alert alert-success alert-dismissible fade show')
-            return redirect('meals:selected_menu')
-        else:
-            print "error"
-    
-    form = OrderForm(instance=Order.objects.all()[0])
-    context = {'options': options, 'form': form, 'menu': menu}
+    def get_initial(self, **kwargs):
+        initials = super(CreateOrder, self).get_initial()
+        menu = Menu.objects.get(uuid=self.kwargs.get("uuid"))
+        initials['menu'] = menu
+        initials['options'] = Option.objects.filter(menu=menu)
+        return initials
 
-    if Order.objects.filter(menu=menu, employee=employee).exists():
-        order = Order.objects.get(menu=menu, employee=employee)
-        print "camino"
-        context = {'options': options, 'form': form, 'menu': menu, 'order': order}
-        return render(request, template, context)
-    return render(request, template, context)
+    def get(self, request, uuid, *args, **kwargs):
+        form = self.form_class(initial=self.get_initial())
+        employee = get_object_or_404(Employee ,identifier=self.request.session['employee_token'] ) if 'employee_token' in self.request.session else Employee.objects.create(identifier=generate_uuid())
+        menu = Menu.objects.get(uuid=self.kwargs.get("uuid"))
+        if Order.objects.filter(menu=menu, employee=employee).exists():
+            return redirect(reverse_lazy('meals:selected_menu', kwargs={'uuid': uuid})) 
+        ##set session identifier
+        request.session['employee_token'] = str(employee.identifier)
+        #redirect to edit if iser alreadt orders
+        return render(request, self.template_name, {'form': form, 'menu': menu})
+
+    def form_valid(self, form):
+        employee = get_object_or_404(Employee ,identifier=self.request.session['employee_token'] ) if 'employee_token' in self.request.session else Employee.objects.create(identifier=generate_uuid())
+        menu = Menu.objects.get(uuid=self.kwargs.get("uuid"))
+        form.instance.employee = employee
+        form.instance.menu = menu
+        return super(CreateOrder, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('meals:selected_menu', kwargs={'uuid': self.object.menu.uuid})
 
 
 
-def map_form_to_order(form, menu, employee):
-    option = Option.objects.get(pk=int(form.cleaned_data['option']))
-    customization = form.cleaned_data['customization']
+class UpdateOrder(UpdateView):
+    model = Order
+    template_name = 'meals/employee_meal_choose.html'
+    form_class = OrderForm
 
-    if Order.objects.filter(menu=menu, employee=employee).exists():
-        order = Order.objects.get(menu=menu, employee=employee)
-        order.customization = customization
-        order.option = option
-        return order
-    else:
-        return Order(menu=menu, employee=employee, option=option, customization=customization)
+    def get_context_data(self, **kwargs):
+        ctx = super(UpdateOrder, self).get_context_data(**kwargs)
+        ctx['menu'] = Menu.objects.get(pk=self.kwargs['pk'])
+        return ctx
 
-    return False
+    def get_initial(self):
+        initial = super(UpdateOrder, self).get_initial()
+        order = Order.objects.get(pk=self.kwargs.get("pk"))
+        initial['menu'] = Menu.objects.get(pk=order.menu.id)
+        initial['option'] = order.option
+        initial['customization'] = order.customization
+        return initial
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class(initial=self.get_initial())
+        employee = get_object_or_404(Employee ,identifier=self.request.session['employee_token'] ) if 'employee_token' in self.request.session else Employee.objects.create(identifier=generate_uuid())
+        request.session['employee_token'] = str(employee.identifier)
+        order = Order.objects.get(pk=self.kwargs.get("pk"))
+        menu = order.menu
+        options = Option.objects.filter(menu=menu)
+        if employee != order.employee:
+            return redirect(reverse_lazy('meals:selected_menu', kwargs={'uuid': uuid}))
+        print self.kwargs.get("pk")
+        can_choose = menu.can_choose_menu
+        return render(request, self.template_name, {'form': form, 'menu': menu, 'options': options, 'can_choose': can_choose})
+
+    def form_valid(self, form):
+        return super(UpdateOrder, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('meals:selected_menu', kwargs={'uuid': self.object.menu.uuid})
+
 
 
 def today_menu_show(request, uuid):
     template = "meals/menu_show_selection.html"
-    menu = get_object_or_404(Menu, uuid=uuid)
+    employee = get_object_or_404(Employee ,identifier=request.session.get('employee_token', None) )
+    menu = Menu.objects.get(uuid=uuid)
+    order = Order.objects.filter(employee=employee, menu=menu)
+    options = Option.objects.filter(menu=menu)
+    if order.exists():
+        order = order[0]
+        option = order.option
+        context = {'order': order, 'options': options, 'option': option, 'menu': menu}
+        return render(request, template, context)
 
-    context = {}
+    else:
+        return redirect(reverse_lazy('meals:today_menu_show', kwargs={'uuid': uuid}))
 
-    return render(request, template, context)
+
 
 
 
