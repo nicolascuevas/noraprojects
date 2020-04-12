@@ -163,6 +163,11 @@ class UpdateOrder(UpdateView):
     template_name = 'meals/employee_meal_choose.html'
     form_class = OrderForm
 
+    def get_context_data(self, **kwargs):
+        ctx = super(UpdateOrder, self).get_context_data(**kwargs)
+        ctx['menu'] = Menu.objects.get(pk=self.kwargs['pk'])
+        return ctx
+
     def get_initial(self):
         initial = super(UpdateOrder, self).get_initial()
         order = Order.objects.get(pk=self.kwargs.get("pk"))
@@ -177,10 +182,11 @@ class UpdateOrder(UpdateView):
         request.session['employee_token'] = str(employee.identifier)
         order = Order.objects.get(pk=self.kwargs.get("pk"))
         menu = order.menu
+        options = Option.objects.filter(menu=menu)
         if employee != order.employee:
             return redirect(reverse_lazy('meals:selected_menu', kwargs={'uuid': uuid}))
         print self.kwargs.get("pk")
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form, 'menu': menu, 'options': options})
 
     def form_valid(self, form):
         return super(UpdateOrder, self).form_valid(form)

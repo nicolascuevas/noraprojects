@@ -4,7 +4,7 @@
 <div class="row">
     <div class="col-lg-6">
         ¡Hola! <br>
-        El menu de hoy :)<br><br>
+        El menu de hoy - {{ menu.date }}<br><br>
         <div>
             {% for menu_option in options %}
                 {{ forloop.counter }}) {{ menu_option.description }} <br>
