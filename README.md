@@ -35,6 +35,14 @@
 - coverage==3.6
 - djangorestframework v3.9.4
 - redisbeat v1.2.4
+- configparser==4.0.2
+- contextlib2==0.6.0.post1
+- funcsigs==1.0.2
+- importlib-metadata==1.6.0
+- jsonpickle==1.2
+- mock==3.0.5
+- scandir==1.10.0
+- zipp==1.2.0
 
 
 ## <a name="Instructions"></a>Instructions
