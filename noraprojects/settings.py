@@ -124,5 +124,5 @@ CELERY_BROKER_URL = 'redis://localhost'
 SLACK_TOKEN = 'xoxp-512467688836-674575901029-1056657534563-7d1f0a198a4b98220c72c7b1b4878c71'  # Need to replace the slack token later
 SLACK_CHANNEL = '#test'
 SLACK_TEXT = "Hola! \n El menu de hoy es : \n {} \n Pueden enviar su pedido aca: {} \nSaludos!"
-MENU_URL = "http://nora/menu/{}"
+MENU_URL = "http://nora.cornershop.io/menu/{}"
 
