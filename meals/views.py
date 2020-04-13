@@ -29,6 +29,8 @@ class BuildTrigger(APIView):
     build_something() # This would take 1 minute to finish
     return Response(None, status=201)
 
+
+
 @method_decorator(login_required, name='dispatch')
 class ListOrder(ListView):
     template_name = "orders_list.html"
@@ -176,7 +178,8 @@ class UpdateOrder(UpdateView):
 
     def get_context_data(self, **kwargs):
         ctx = super(UpdateOrder, self).get_context_data(**kwargs)
-        ctx['menu'] = Menu.objects.get(pk=self.kwargs['pk'])
+        order = Order.objects.get(pk=self.kwargs.get("pk"))
+        ctx['menu'] = Menu.objects.get(pk=order.menu.id)
         return ctx
 
     def get_initial(self):
@@ -189,13 +192,13 @@ class UpdateOrder(UpdateView):
 
     def get(self, request, *args, **kwargs):
         form = self.form_class(initial=self.get_initial())
-        employee = get_object_or_404(Employee ,identifier=self.request.session['employee_token'] ) if 'employee_token' in self.request.session else Employee.objects.create(identifier=generate_uuid())
+        employee = get_object_or_404(Employee ,identifier=self.request.session.get('employee_token', None) )
         request.session['employee_token'] = str(employee.identifier)
         order = Order.objects.get(pk=self.kwargs.get("pk"))
         menu = order.menu
         options = Option.objects.filter(menu=menu)
         if employee != order.employee:
-            return redirect(reverse_lazy('meals:selected_menu', kwargs={'uuid': uuid}))
+            return redirect(reverse_lazy('meals:selected_menu', kwargs={'uuid': menu.uuid}))
         print self.kwargs.get("pk")
         can_choose = menu.can_choose_menu
         return render(request, self.template_name, {'form': form, 'menu': menu, 'options': options, 'can_choose': can_choose})

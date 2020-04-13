@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 # Create your models here.
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.exceptions import NON_FIELD_ERRORS
+from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.db.models import signals
@@ -35,26 +35,7 @@ class Menu(models.Model):
 
 
     def can_choose_menu(self):
-        """
-            Choose their preferred meal (until 11 AM CLT)
-        """
-        current_local_time = timezone.make_aware(datetime.now(),timezone.get_default_timezone())
-        menu_local_time = timezone.make_aware(datetime.now(),timezone.get_default_timezone())
-        menu_local_time = menu_local_time.replace(   year=int(self.date.strftime('%Y')), 
-                                    month=int(self.date.strftime('%m')), 
-                                    day=int(self.date.strftime('%d')), 
-                                    hour=11, 
-                                    minute=0, 
-                                    second=0)
-
-        print "localtime jajaaj"
-        print current_local_time
-        print menu_local_time
-        
-        # today_date = datetime.now()
-        # today_time = time(today_date.hour, today_date.minute, today_date.second)
-        # result = today_time.hour <= 11 and today_time.minute <= 60
-        return current_local_time < menu_local_time
+        return helpers.before_lunch_time(self.date)
 
 
     def is_enable(self):
@@ -85,7 +66,7 @@ class Option(models.Model):
 
 
 class Employee(models.Model):
-    identifier = models.CharField(max_length=64, verbose_name="identifier", default=helpers.generate_uuid())
+    identifier = models.CharField(max_length=64, verbose_name="identifier", default=helpers.generate_uuid(), unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -99,14 +80,12 @@ class Employee(models.Model):
         return str(self.identifier)
 
 
-
-
 class Order(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.DO_NOTHING)
     option = models.ForeignKey(Option, on_delete=models.DO_NOTHING)
     menu = models.ForeignKey(Menu, on_delete=models.DO_NOTHING)
     customization = models.CharField(max_length=170, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, )
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -116,6 +95,7 @@ class Order(models.Model):
     def __str__(self):
         return str(self.id)
 
-        
-
-
+    def save(self, *args, **kwargs):
+        if helpers.before_lunch_time(self.menu.date) == False:
+            raise ValidationError("This Meal is closed")
+        super(Order, self).save(*args, **kwargs)
