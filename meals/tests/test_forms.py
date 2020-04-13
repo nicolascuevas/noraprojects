@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 import uuid
 
 
-class FormsTest(TestCase):
+# class FormsTest(TestCase):
     # def make_options(self, menu):
     #     return [
     #         Option(menu=menu, description="Option1"),
