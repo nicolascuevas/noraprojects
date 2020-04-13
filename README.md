@@ -135,11 +135,11 @@ create slack app with the following scopes:
 	- users:list:read
 	- chat:write:bot
 
-paste de Slack Bot Token in the folowind directory and paste on SLACK_TOKEN
+paste de Slack Token in the folowind directory and paste on SLACK_TOKEN
 
 ```bash
  > noraprojects/noraprojects/settings.py
- SLACK_TOKEN = 'xoxb-xxxxxxxxxxxxxx-xxxxxxxxxxxxxx-xxxxxxxxdxxxxxxxxxxxxxxx'
+ SLACK_TOKEN = 'xoxp-xxxxxxxxxxxxxx-xxxxxxxxxxxxxx-xxxxxxxxdxxxxxxxxxxxxxxx'
 ```
 
 This will start a cron job which is going to import slack users every day and send s reminder for users every day at 7AM
