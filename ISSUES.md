@@ -7,14 +7,24 @@
 - Orders result base on menu (Done)
 - Show orders count for nora (Done)
 - Employees can edit their orders (Done)
-- Use and asign SESSION to identify employees.
-- employees can only make 1 order per meal
-- prevent edit for old meals
+- Use and asign SESSION to identify employees. (Done)
+- employees can only make 1 order per meal(Done)
+- prevent edit for old meals(Done)
+- Forms does not have validation feedback to users(Done)
+- documentation mistakes on importing users data (Done)
+- fix Models in project (Done)
+- Better time validation, all menus from today at 11 to the future could be updated by users base on Santiago's TZ (Done)
+- rename folder myproject, bad practice for django project.(Done)
+- create slack reminder at 9 (2 hours before menus due date ) of it's date when menu is created(Done)
+- show orders summary to help Nora to prepare the lunch(Done)
+- create test for models (Done)
+- create test for views (Done)
+
 
 ## Celery
 
 - dont send complex objects to celery tasks (options), user options array (Done)
-- use dispatcher for signal (Ready)
+- use dispatcher for signal (Done)
 - form validations for menu and dish creation (Done)
 - create different task schedule after menus is created (Done)
 
@@ -43,8 +53,8 @@
 
 #### views
 - show create (Done)
-- show edit (Pending)
-- validation showing (Pending)
+- show edit (Done)
+- validation showing (Done)
 
 ###Order
 
