@@ -7,14 +7,24 @@
 - Orders result base on menu (Done)
 - Show orders count for nora (Done)
 - Employees can edit their orders (Done)
-- Use and asign SESSION to identify employees.
-- employees can only make 1 order per meal
-- prevent edit for old meals
+- Use and asign SESSION to identify employees. (Done)
+- employees can only make 1 order per meal(Done)
+- prevent edit for old meals(Done)
+- Forms does not have validation feedback to users(Done)
+- documentation mistakes on importing users data (Done)
+- fix Models in project (Done)
+- Better time validation, all menus from today at 11 to the future could be updated by users base on Santiago's TZ (Done)
+- rename folder myproject, bad practice for django project.(Done)
+- create slack reminder at 9 (2 hours before menus due date ) of it's date when menu is created(Done)
+- show orders summary to help Nora to prepare the lunch(Done)
+- create test for models (Done)
+- create test for views (Done)
+
 
 ## Celery
 
 - dont send complex objects to celery tasks (options), user options array (Done)
-- use dispatcher for signal (Ready)
+- use dispatcher for signal (Done)
 - form validations for menu and dish creation (Done)
 - create different task schedule after menus is created (Done)
 
@@ -25,40 +35,39 @@
 #### model
 - menu creation (Done)
 - unique menu per date (Done)
-- is activate before 11 (local time)
+- is activate before 11 (local time) (done)
 
 #### views
-- Show form fields (Pending)
-- Show model menu (Pending)
-- show dished optons (Pending)
-- show answers fto Nora (Pending)
+- Show new (Done)
+- Show model menu (Done)
+- show dished optons (Done)
+- show answers fto Nora (Done)
+- 
 
 
 ###Option
 
 #### Model
-- create option to menu (Pending)
-- prevent create option without menu or description (Pending)
-- edit option (Pending)
+- create option to menu (Done)
+- prevent create option without description (Done)
 
 #### views
-- show crea (Pending)
-- show edit (Pending)
-- validation showing (Pending)
+- show create (Done)
+- show edit (Done)
+- validation showing (Done)
 
 ###Order
 
 #### Model
-- create Order  (Pending)
-- prevent prder creation withput al lvalues (Pending)
-- edit order with employee id (Pending)
-- create only before 11pm (localtime)
+- create Order before 11 of the meal date (Done)
+- create Order after 11 of the meal date (Done)
+- edit order with employee id (Done)
 
 
 #### views
-- show new (Pending)
-- show edit (Pending)
-- show answer (Pending)
+- show new (Done)
+- show edit (Done)
+- show answer (Done)
 
 
 
